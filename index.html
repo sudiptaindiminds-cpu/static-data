@@ -494,7 +494,9 @@
 
     <!-- App Scripts -->
     <script>
-        const API_URL = 'http://fitmind.connectcloud365.com:31495/api/StaticData';
+        const API_URL = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
+            ? 'http://fitmind.connectcloud365.com:31495/api/StaticData'
+            : window.location.origin + '/api/StaticData';
         let recordsState = [];
         let bsDataModal = null;
         let bsDeleteModal = null;

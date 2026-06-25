@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/StaticData/:path*",
+      "destination": "http://fitmind.connectcloud365.com:31495/api/StaticData/:path*"
+    },
+    {
+      "source": "/api/StaticData",
+      "destination": "http://fitmind.connectcloud365.com:31495/api/StaticData"
+    }
+  ]
+}
