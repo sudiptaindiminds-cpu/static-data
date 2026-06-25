@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitMind - Static Data Management</title>
+    <!-- Google Fonts: Inter & Space Grotesk -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --accent-color: #4f46e5;
+            --accent-hover: #4338ca;
+            --accent-success: #16a34a;
+            --accent-danger: #dc2626;
+            --border-color: #e2e8f0;
+            --transition-speed: 0.3s;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Navbar */
+        .navbar-brand {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1.5rem;
+            letter-spacing: -0.5px;
+            background: linear-gradient(to right, #4f46e5, #9333ea);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        /* Card styles */
+        .stats-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-color), #a855f7);
+        }
+
+        .stats-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+        }
+
+        .stats-icon {
+            font-size: 2rem;
+            color: var(--accent-color);
+            opacity: 0.8;
+        }
+
+        /* Content block styling */
+        .content-block {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+        }
+
+        /* Table styles */
+        .table-responsive {
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .table {
+            margin-bottom: 0;
+            color: var(--text-primary);
+            background-color: var(--bg-secondary);
+        }
+
+        .table th {
+            background-color: #f8fafc;
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .table td {
+            padding: 1rem;
+            vertical-align: middle;
+            border-bottom: 1px solid var(--border-color);
+            background-color: transparent;
+        }
+
+        .table tbody tr {
+            transition: background-color 0.2s;
+        }
+
+        .table tbody tr:hover {
+            background-color: rgba(99, 102, 241, 0.03);
+        }
+
+        /* Form elements */
+        .form-control, .form-select {
+            background-color: #ffffff;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: 8px;
+            padding: 0.6rem 1rem;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: #ffffff;
+            border-color: var(--accent-color);
+            color: var(--text-primary);
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+        }
+
+        .input-group-text {
+            background-color: #f1f5f9;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            border: none;
+            border-radius: 8px;
+            padding: 0.6rem 1.2rem;
+            font-weight: 500;
+            transition: background-color var(--transition-speed);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+        }
+
+        /* Status badges */
+        .badge-active {
+            background-color: rgba(22, 163, 74, 0.1);
+            color: var(--accent-success);
+            border: 1px solid rgba(22, 163, 74, 0.2);
+            padding: 0.35em 0.65em;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-inactive {
+            background-color: rgba(220, 38, 38, 0.1);
+            color: var(--accent-danger);
+            border: 1px solid rgba(220, 38, 38, 0.2);
+            padding: 0.35em 0.65em;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Modal Customization */
+        .modal-content {
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .modal-header {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-footer {
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* Shimmer loading animation */
+        .shimmer {
+            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        /* Toast Container */
+        .toast-container-custom {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1060;
+        }
+
+        /* Micro-interactions */
+        .btn-action {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: transform 0.1s;
+        }
+
+        .btn-action:active {
+            transform: scale(0.9);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <nav class="navbar navbar-light border-bottom py-3" style="background-color: var(--bg-secondary);">
+        <div class="container-fluid px-4">
+            <span class="navbar-brand mb-0 h1"><i class="fa-solid fa-brain me-2"></i>FitMind Admin</span>
+            <div class="d-flex align-items-center">
+                <span class="text-secondary me-2"><i class="fa-solid fa-circle-dot text-success me-1"></i> Masters API Connected</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Workspace -->
+    <main class="main-container">
+        
+        <!-- Stats Row -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <div class="stats-card d-flex align-items-center justify-content-between">
+                    <div>
+                        <p class="text-secondary mb-1">Total Records</p>
+                        <h3 class="mb-0 fw-bold" id="stat-total">--</h3>
+                    </div>
+                    <div class="stats-icon"><i class="fa-solid fa-database"></i></div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stats-card d-flex align-items-center justify-content-between">
+                    <div>
+                        <p class="text-secondary mb-1">Active Records</p>
+                        <h3 class="mb-0 fw-bold text-success" id="stat-active">--</h3>
+                    </div>
+                    <div class="stats-icon text-success"><i class="fa-solid fa-circle-check"></i></div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stats-card d-flex align-items-center justify-content-between">
+                    <div>
+                        <p class="text-secondary mb-1">Unique Categories/Types</p>
+                        <h3 class="mb-0 fw-bold text-info" id="stat-types">--</h3>
+                    </div>
+                    <div class="stats-icon text-info"><i class="fa-solid fa-tags"></i></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls & Table Area -->
+        <div class="content-block">
+            <div class="row g-3 align-items-center mb-4">
+                <!-- Search bar -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text text-secondary"><i class="fa-solid fa-magnifying-glass"></i></span>
+                        <input type="text" id="searchInput" class="form-control" placeholder="Search by name, code, type...">
+                    </div>
+                </div>
+                <!-- Filter Type -->
+                <div class="col-lg-3 col-md-6">
+                    <select id="filterType" class="form-select">
+                        <option value="">All Types (Categories)</option>
+                    </select>
+                </div>
+                <!-- Filter Status -->
+                <div class="col-lg-2 col-md-6">
+                    <select id="filterStatus" class="form-select">
+                        <option value="">All Statuses</option>
+                        <option value="active">Active Only</option>
+                        <option value="inactive">Inactive Only</option>
+                    </select>
+                </div>
+                <!-- Action Buttons -->
+                <div class="col-lg-3 col-md-6 text-md-end">
+                    <button class="btn btn-primary w-100 w-md-auto" onclick="openCreateModal()">
+                        <i class="fa-solid fa-plus me-2"></i>Add Static Data
+                    </button>
+                </div>
+            </div>
+
+            <!-- Table or Loader -->
+            <div class="table-responsive">
+                <table class="table align-middle" id="dataTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 80px;">ID</th>
+                            <th>Type</th>
+                            <th>Code</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th style="width: 100px;">Sort Order</th>
+                            <th style="width: 100px;">Status</th>
+                            <th style="width: 120px;" class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- Shimmer placeholders initially -->
+                        <tr class="shimmer-row">
+                            <td colspan="8" class="text-center py-5">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <div class="mt-2 text-secondary">Fetching data from Masters API...</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="text-center py-5 d-none">
+                <i class="fa-regular fa-folder-open text-secondary mb-3" style="font-size: 3rem;"></i>
+                <h5 class="fw-semibold">No Static Data Found</h5>
+                <p class="text-secondary small">Try adjusting your filters or search term, or create a new record.</p>
+            </div>
+        </div>
+
+        <!-- API Testing Sandbox Block -->
+        <div class="content-block mt-4">
+            <h4 class="mb-3 fw-bold text-dark"><i class="fa-solid fa-flask text-indigo me-2"></i>API Sandbox: Get Dropdown By Type</h4>
+            <p class="text-secondary small">Test the dropdown generation API endpoint by passing path and query parameters below. This displays the final endpoint URL and the structured dropdown payload returned.</p>
+            
+            <div class="row g-3">
+                <!-- Sandbox Inputs -->
+                <div class="col-lg-4">
+                    <div class="card p-3 border border-secondary-subtle bg-light h-100">
+                        <div class="mb-3">
+                            <label for="sandboxType" class="form-label small text-secondary fw-semibold">Type (Path Param)</label>
+                            <select id="sandboxType" class="form-select mb-2">
+                                <option value="">Select a Category...</option>
+                            </select>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white small text-secondary">Custom:</span>
+                                <input type="text" id="sandboxTypeCustom" class="form-control" placeholder="e.g. GENDER or custom">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="sandboxValueType" class="form-label small text-secondary fw-semibold">valueType (Query Param)</label>
+                            <select id="sandboxValueType" class="form-select">
+                                <option value="1">1 - Standard IDs (e.g. 4, 5)</option>
+                                <option value="2">2 - Label Names (e.g. Male, Female)</option>
+                                <option value="3">3 - Category Codes (e.g. M, F)</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary w-100" id="btnTestApi" onclick="testDropdownApi()">
+                            <i class="fa-solid fa-paper-plane me-2"></i>Send Request
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Live URL & Response View -->
+                <div class="col-lg-8">
+                    <div class="card p-3 border border-secondary-subtle bg-light h-100 d-flex flex-column">
+                        <div class="mb-2">
+                            <label class="form-label small text-secondary fw-semibold mb-1">Request Endpoint URL</label>
+                            <div class="d-flex gap-2">
+                                <span class="badge bg-primary text-white d-flex align-items-center px-3 fs-6" style="background-color: var(--accent-color) !important;">GET</span>
+                                <code class="d-block p-2 bg-white border rounded text-truncate flex-grow-1" id="sandboxUrlPreview" style="font-size: 0.9rem; font-family: monospace;">-</code>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 d-flex flex-column mt-2">
+                            <label class="form-label small text-secondary fw-semibold mb-1">JSON Response Output</label>
+                            <pre class="bg-dark text-light p-3 rounded mb-0 flex-grow-1 overflow-auto" id="sandboxResponseOutput" style="font-family: monospace; font-size: 0.85rem; max-height: 250px; min-height: 180px;">{
+  "status": "Waiting for request..."
+}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Create/Edit Modal -->
+    <div class="modal fade" id="dataModal" tabindex="-1" aria-labelledby="dataModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="dataModalLabel"><i class="fa-solid fa-pen-to-square me-2"></i><span>Add Static Data</span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="dataForm" onsubmit="handleFormSubmit(event)">
+                    <input type="hidden" id="recordId">
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label for="formType" class="form-label small text-secondary fw-semibold">Type (Category)*</label>
+                                <input type="text" class="form-control" id="formType" placeholder="e.g. GENDER, COUNTRY, etc." required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="formCode" class="form-label small text-secondary fw-semibold">Code*</label>
+                                <input type="text" class="form-control" id="formCode" placeholder="e.g. M, F, US" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="formName" class="form-label small text-secondary fw-semibold">Name*</label>
+                                <input type="text" class="form-control" id="formName" placeholder="e.g. Male, Female" required>
+                            </div>
+                            <div class="col-12">
+                                <label for="formDescription" class="form-label small text-secondary fw-semibold">Description</label>
+                                <textarea class="form-control" id="formDescription" rows="2" placeholder="Brief description of the record"></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="formSortOrder" class="form-label small text-secondary fw-semibold">Sort Order</label>
+                                <input type="number" class="form-control" id="formSortOrder" value="1" min="0">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="formParentId" class="form-label small text-secondary fw-semibold">Parent ID</label>
+                                <input type="number" class="form-control" id="formParentId" placeholder="Optional parent ref">
+                            </div>
+                            <div class="col-12">
+                                <div class="form-check form-switch mt-2">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="formIsActive" checked>
+                                    <label class="form-check-label small text-secondary" for="formIsActive">Is Active Record</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary border" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="saveBtn">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Delete Modal -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content border-danger">
+                <div class="modal-header border-danger">
+                    <h5 class="modal-title text-danger"><i class="fa-solid fa-triangle-exclamation me-2"></i>Delete Record</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this static data record? This action cannot be undone.
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary btn-sm border" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger btn-sm" id="confirmDeleteBtn">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div class="toast-container-custom" id="toastContainer"></div>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- App Scripts -->
+    <script>
+        const API_URL = 'http://fitmind.connectcloud365.com:31495/api/StaticData';
+        let recordsState = [];
+        let bsDataModal = null;
+        let bsDeleteModal = null;
+        let deleteTargetId = null;
+
+        // Initialize elements
+        document.addEventListener('DOMContentLoaded', () => {
+            bsDataModal = new bootstrap.Modal(document.getElementById('dataModal'));
+            bsDeleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+            
+            // Fetch initial data
+            fetchStaticData();
+
+            // Set up filter and search triggers
+            document.getElementById('searchInput').addEventListener('input', applyFilters);
+            document.getElementById('filterType').addEventListener('change', applyFilters);
+            document.getElementById('filterStatus').addEventListener('change', applyFilters);
+
+            // Confirm delete action
+            document.getElementById('confirmDeleteBtn').addEventListener('click', executeDelete);
+
+            // Sandbox triggers
+            document.getElementById('sandboxType').addEventListener('change', (e) => {
+                if (e.target.value) {
+                    document.getElementById('sandboxTypeCustom').value = e.target.value;
+                }
+                updateSandboxUrlPreview();
+            });
+            document.getElementById('sandboxTypeCustom').addEventListener('input', updateSandboxUrlPreview);
+            document.getElementById('sandboxValueType').addEventListener('change', updateSandboxUrlPreview);
+            
+            // Initial Sandbox preview
+            updateSandboxUrlPreview();
+        });
+
+        // Toast Helper
+        function showNotification(message, type = 'success') {
+            const toastContainer = document.getElementById('toastContainer');
+            const icon = type === 'success' 
+                ? '<i class="fa-solid fa-circle-check text-success me-2"></i>' 
+                : '<i class="fa-solid fa-circle-exclamation text-danger me-2"></i>';
+            
+            const toastHtml = `
+                <div class="toast align-items-center text-white border-0 mb-2" role="alert" aria-live="assertive" aria-atomic="true" style="background-color: var(--bg-card); min-width: 250px;">
+                    <div class="d-flex">
+                        <div class="toast-body d-flex align-items-center">
+                            ${icon}
+                            <span>${message}</span>
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            `;
+            
+            toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+            const toastEl = toastContainer.lastElementChild;
+            const toast = new bootstrap.Toast(toastEl, { delay: 4000 });
+            toast.show();
+
+            toastEl.addEventListener('hidden.bs.toast', () => {
+                toastEl.remove();
+            });
+        }
+
+        // Fetch All Data
+        async function fetchStaticData() {
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) throw new Error('Network response was not ok');
+                const result = await response.json();
+                
+                if (result.success) {
+                    recordsState = result.data || [];
+                    populateTypeFilter(recordsState);
+                    updateStats(recordsState);
+                    renderTable(recordsState);
+                } else {
+                    showNotification(result.message || 'Failed to fetch data', 'danger');
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                showNotification('Could not connect to API server', 'danger');
+                document.getElementById('tableBody').innerHTML = `
+                    <tr>
+                        <td colspan="8" class="text-center py-5 text-danger">
+                            <i class="fa-solid fa-triangle-exclamation mb-2" style="font-size: 2rem;"></i>
+                            <div>Error loading data. Please check connection and retry.</div>
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Populate the distinct Types in the dropdown filter
+        function populateTypeFilter(records) {
+            const filterDropdown = document.getElementById('filterType');
+            const currentValue = filterDropdown.value;
+            
+            // Get unique sorted types
+            const uniqueTypes = [...new Set(records.map(r => r.type).filter(Boolean))].sort();
+            
+            // Reset but keep the "All Types" first option
+            filterDropdown.innerHTML = '<option value="">All Types (Categories)</option>';
+            
+            uniqueTypes.forEach(type => {
+                const option = document.createElement('option');
+                option.value = type;
+                option.textContent = type;
+                filterDropdown.appendChild(option);
+            });
+
+            // Populate Sandbox Type Selector too
+            const sandboxTypeDropdown = document.getElementById('sandboxType');
+            const selectedSandboxType = sandboxTypeDropdown.value;
+            sandboxTypeDropdown.innerHTML = '<option value="">Select a Category...</option>';
+            uniqueTypes.forEach(type => {
+                const option = document.createElement('option');
+                option.value = type;
+                option.textContent = type;
+                sandboxTypeDropdown.appendChild(option);
+            });
+            if (uniqueTypes.includes(selectedSandboxType)) {
+                sandboxTypeDropdown.value = selectedSandboxType;
+            }
+
+            // Restore previous value if it still exists
+            if (uniqueTypes.includes(currentValue)) {
+                filterDropdown.value = currentValue;
+            }
+        }
+
+        // Update statistics cards
+        function updateStats(records) {
+            const total = records.length;
+            const active = records.filter(r => r.isActive).length;
+            const uniqueTypes = new Set(records.map(r => r.type).filter(Boolean)).size;
+
+            document.getElementById('stat-total').textContent = total;
+            document.getElementById('stat-active').textContent = active;
+            document.getElementById('stat-types').textContent = uniqueTypes;
+        }
+
+        // Render record table
+        function renderTable(records) {
+            const tableBody = document.getElementById('tableBody');
+            const emptyState = document.getElementById('emptyState');
+            
+            if (records.length === 0) {
+                tableBody.innerHTML = '';
+                emptyState.classList.remove('d-none');
+                return;
+            }
+            
+            emptyState.classList.add('d-none');
+            
+            tableBody.innerHTML = records.map(record => `
+                <tr>
+                    <td class="fw-semibold text-secondary">#${record.id}</td>
+                    <td><span class="badge bg-light text-dark border border-secondary-subtle">${record.type}</span></td>
+                    <td><code class="text-info">${record.code}</code></td>
+                    <td class="fw-medium">${escapeHtml(record.name)}</td>
+                    <td class="text-secondary small" title="${escapeHtml(record.description || '')}">
+                        ${escapeHtml(truncateString(record.description || '-', 40))}
+                    </td>
+                    <td>${record.sortOrder || 0}</td>
+                    <td>
+                        <span class="${record.isActive ? 'badge-active' : 'badge-inactive'}">
+                            ${record.isActive ? 'Active' : 'Inactive'}
+                        </span>
+                    </td>
+                    <td class="text-end">
+                        <button class="btn btn-action btn-outline-info btn-sm me-1" onclick="openEditModal(${record.id})" title="Edit">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                        <button class="btn btn-action btn-outline-danger btn-sm" onclick="confirmDelete(${record.id})" title="Delete">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Search & Filter execution
+        function applyFilters() {
+            const searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
+            const selectedType = document.getElementById('filterType').value;
+            const selectedStatus = document.getElementById('filterStatus').value;
+
+            const filtered = recordsState.filter(record => {
+                // Search term match
+                const matchesSearch = !searchQuery || 
+                    (record.name && record.name.toLowerCase().includes(searchQuery)) ||
+                    (record.code && record.code.toLowerCase().includes(searchQuery)) ||
+                    (record.type && record.type.toLowerCase().includes(searchQuery)) ||
+                    (record.description && record.description.toLowerCase().includes(searchQuery));
+
+                // Type filter match
+                const matchesType = !selectedType || record.type === selectedType;
+
+                // Status filter match
+                const matchesStatus = !selectedStatus || 
+                    (selectedStatus === 'active' && record.isActive) ||
+                    (selectedStatus === 'inactive' && !record.isActive);
+
+                return matchesSearch && matchesType && matchesStatus;
+            });
+
+            renderTable(filtered);
+        }
+
+        // Open modal in Create mode
+        function openCreateModal() {
+            document.getElementById('dataForm').reset();
+            document.getElementById('recordId').value = '';
+            document.getElementById('dataModalLabel').querySelector('span').textContent = 'Add Static Data';
+            document.getElementById('formType').disabled = false;
+            document.getElementById('formCode').disabled = false;
+            
+            // defaults
+            document.getElementById('formSortOrder').value = 1;
+            document.getElementById('formIsActive').checked = true;
+            
+            bsDataModal.show();
+        }
+
+        // Open modal in Edit mode
+        async function openEditModal(id) {
+            const record = recordsState.find(r => r.id === id);
+            if (!record) return;
+
+            document.getElementById('recordId').value = record.id;
+            document.getElementById('formType').value = record.type || '';
+            document.getElementById('formCode').value = record.code || '';
+            document.getElementById('formName').value = record.name || '';
+            document.getElementById('formDescription').value = record.description || '';
+            document.getElementById('formSortOrder').value = record.sortOrder || 1;
+            document.getElementById('formParentId').value = record.parentId || '';
+            document.getElementById('formIsActive').checked = record.isActive;
+
+            document.getElementById('dataModalLabel').querySelector('span').textContent = `Edit Record #${id}`;
+            
+            bsDataModal.show();
+        }
+
+        // Handle Add/Edit Form Submit
+        async function handleFormSubmit(event) {
+            event.preventDefault();
+            
+            const saveBtn = document.getElementById('saveBtn');
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Saving...';
+
+            const recordId = document.getElementById('recordId').value;
+            const isEdit = !!recordId;
+
+            const payload = {
+                type: document.getElementById('formType').value,
+                code: document.getElementById('formCode').value,
+                name: document.getElementById('formName').value,
+                description: document.getElementById('formDescription').value || null,
+                sortOrder: parseInt(document.getElementById('formSortOrder').value) || 1,
+                parentId: parseInt(document.getElementById('formParentId').value) || null,
+                isActive: document.getElementById('formIsActive').checked
+            };
+
+            if (isEdit) {
+                payload.id = parseInt(recordId);
+            }
+
+            try {
+                // Post has body payload, Put also has body payload (from API Collection PUT /api/StaticData)
+                const url = API_URL;
+                const method = isEdit ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) throw new Error('API server returned an error');
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification(isEdit ? 'Record updated successfully' : 'Record created successfully', 'success');
+                    bsDataModal.hide();
+                    fetchStaticData();
+                } else {
+                    showNotification(result.message || 'Operation failed', 'danger');
+                }
+            } catch (error) {
+                console.error(error);
+                showNotification('Server communication failure', 'danger');
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Save Changes';
+            }
+        }
+
+        // Show delete confirmation dialog
+        function confirmDelete(id) {
+            deleteTargetId = id;
+            bsDeleteModal.show();
+        }
+
+        // Execute Delete operation
+        async function executeDelete() {
+            if (!deleteTargetId) return;
+
+            const confirmBtn = document.getElementById('confirmDeleteBtn');
+            confirmBtn.disabled = true;
+            confirmBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Deleting...';
+
+            try {
+                const response = await fetch(`${API_URL}/${deleteTargetId}`, {
+                    method: 'DELETE'
+                });
+
+                if (!response.ok) throw new Error('Delete API failed');
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showNotification('Record deleted successfully', 'success');
+                    bsDeleteModal.hide();
+                    fetchStaticData();
+                } else {
+                    showNotification(result.message || 'Failed to delete record', 'danger');
+                }
+            } catch (error) {
+                console.error(error);
+                showNotification('Could not complete delete action', 'danger');
+            } finally {
+                confirmBtn.disabled = false;
+                confirmBtn.textContent = 'Delete';
+                deleteTargetId = null;
+            }
+        }
+
+        // Helper Utilities
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function truncateString(str, num) {
+            if (!str) return '';
+            if (str.length <= num) return str;
+            return str.slice(0, num) + '...';
+        }
+
+        // API Sandbox Helpers
+        function getSandboxUrl() {
+            const baseUrl = API_URL.replace(/\/$/, ""); // Strip trailing slash if present
+            const rawType = document.getElementById('sandboxTypeCustom').value.trim();
+            const typeParam = rawType ? encodeURIComponent(rawType) : '{type}';
+            const valueType = document.getElementById('sandboxValueType').value;
+            return `${baseUrl}/dropdown/${typeParam}?valueType=${valueType}`;
+        }
+
+        function updateSandboxUrlPreview() {
+            const previewEl = document.getElementById('sandboxUrlPreview');
+            previewEl.textContent = getSandboxUrl();
+        }
+
+        async function testDropdownApi() {
+            const responseEl = document.getElementById('sandboxResponseOutput');
+            const testBtn = document.getElementById('btnTestApi');
+            const type = document.getElementById('sandboxTypeCustom').value.trim();
+
+            if (!type) {
+                showNotification('Please select or enter a Category Type first', 'danger');
+                return;
+            }
+
+            // Set state to loading
+            testBtn.disabled = true;
+            testBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Testing...';
+            responseEl.textContent = 'Sending request...\nGET ' + getSandboxUrl();
+            responseEl.className = "bg-dark text-light p-3 rounded mb-0 flex-grow-1 overflow-auto";
+
+            try {
+                const url = getSandboxUrl();
+                const response = await fetch(url);
+                const result = await response.json();
+
+                responseEl.textContent = JSON.stringify(result, null, 2);
+                if (result.success) {
+                    showNotification('Dropdown API tested successfully', 'success');
+                } else {
+                    showNotification(result.message || 'API responded with error code', 'danger');
+                }
+            } catch (error) {
+                console.error(error);
+                responseEl.textContent = 'API Error:\n' + error.message;
+                showNotification('Failed to retrieve API response', 'danger');
+            } finally {
+                testBtn.disabled = false;
+                testBtn.innerHTML = '<i class="fa-solid fa-paper-plane me-2"></i>Send Request';
+            }
+        }
+    </script>
+</body>
+</html>
